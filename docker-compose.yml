@@ -1,5 +1,11 @@
 version: '3.8'
 services:
+  db:
+    image: mysql:8.0.30-debian
+    environment:
+      MYSQL_ROOT_PASSWORD: mslabs.1
+    volumes:
+      - sailpoint-iiq-db:/var/lib/mysql:rw
   iiq:
     build:
       context: .
@@ -14,11 +20,5 @@ services:
       - MYSQL_HOST=db
       - IIQ_VERSION=8.3
       - IIQ_PATCH=8.3p1
-  db:
-    image: mysql:8.0.30-debian
-    environment:
-      MYSQL_ROOT_PASSWORD: mslabs.1
-    volumes:
-      - sailpoint-iiq-db:/var/lib/mysql:rw
 volumes:
   sailpoint-iiq-db:
