@@ -16,9 +16,9 @@
     <Transition to="Get Log File" when='"getLog".equals(operation);'/>
     <Transition to="Get Classes" when='"getClasses".equals(operation);'/>
     <Transition to="Get Class Objects" when='"getClassObjects".equals(operation);'/>
+    <Transition to="Get Object" when='"getObject".equals(operation);'/>
     <!--
     <Transition to="Import" when='"Import".equals(operation);'/>
-    <Transition to="Get Object" when='"getObject".equals(operation);'/>
     <Transition to="Delete Object" when='"deleteObject".equals(operation);'/>
     <Transition to="Get Task List" when='"getTaskList".equals(operation);'/>
     <Transition to="Run Task" when='"runTask".equals(operation);'/>
@@ -204,34 +204,6 @@
     </Script>
     <Transition to="Stop"/>
   </Step>
-  <!--
-  <Step icon="Provision" name="Import" resultVariable="payload">
-    <Script>
-      <Source>
-        <![CDATA[ 
-          import sailpoint.server.Importer; 
-          import sailpoint.tools.GeneralException; 
-          import sailpoint.web.system.ImportBean.ImportMonitor; 
-          import org.apache.log4j.Logger;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-
-          iidDevAccelLogger.debug("Started Importer"); 
-          Importer importer = new Importer(context, new ImportMonitor()); 
-          try { 
-            //iidDevAccelLogger.debug("File content: " + resource); 
-            importer.importXml(resource); 
-            context.commitTransaction(); 
-          } 
-          catch (Exception e) {
-            iidDevAccelLogger.error("Importer failed with exception: " + e); 
-            return e.toString(); 
-          } 
-          return "success"; 
-          ]]>
-      </Source>
-    </Script>
-    <Transition to="Stop"/>
-  </Step>
   <Step icon="Default" name="Get Object" resultVariable="payload">
     <Script>
       <Source>
@@ -265,6 +237,34 @@
           
           iidDevAccelLogger.debug("Finished getting an object"); 
           return obj.toXml(); 
+          ]]>
+      </Source>
+    </Script>
+    <Transition to="Stop"/>
+  </Step>
+  <!--
+  <Step icon="Provision" name="Import" resultVariable="payload">
+    <Script>
+      <Source>
+        <![CDATA[ 
+          import sailpoint.server.Importer; 
+          import sailpoint.tools.GeneralException; 
+          import sailpoint.web.system.ImportBean.ImportMonitor; 
+          import org.apache.log4j.Logger;
+          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
+
+          iidDevAccelLogger.debug("Started Importer"); 
+          Importer importer = new Importer(context, new ImportMonitor()); 
+          try { 
+            //iidDevAccelLogger.debug("File content: " + resource); 
+            importer.importXml(resource); 
+            context.commitTransaction(); 
+          } 
+          catch (Exception e) {
+            iidDevAccelLogger.error("Importer failed with exception: " + e); 
+            return e.toString(); 
+          } 
+          return "success"; 
           ]]>
       </Source>
     </Script>
