@@ -1,0 +1,1 @@
+FROM osixia/openldap:stable-amd64
