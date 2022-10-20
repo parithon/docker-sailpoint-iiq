@@ -32,7 +32,7 @@ services:
   phpldapadmin:
     image: osixia/phpldapadmin:stable-amd64
     ports:
-      - "127.0.0.1:9002:80/tcp"
+      - "127.0.0.1:9001:80/tcp"
     depends_on:
       - ldap
     environment:
