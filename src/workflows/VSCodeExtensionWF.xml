@@ -16,6 +16,7 @@
     <Transition to="Get Log File" when='"getLog".equals(operation);'/>
     <Transition to="Get Classes" when='"getClasses".equals(operation);'/>
     <Transition to="Get Class Objects" when='"getClassObjects".equals(operation);'/>
+    <Transition to="Get Class Objects Contents" when='"getClassObjectsContents".equals(operation);'/>
     <Transition to="Get Object" when='"getObject".equals(operation);'/>
     <!--
     <Transition to="Import" when='"Import".equals(operation);'/>
@@ -199,6 +200,54 @@
           
           iidDevAccelLogger.debug("Finished getting class objects"); 
           return resultArray; 
+          ]]>
+      </Source>
+    </Script>
+    <Transition to="Stop"/>
+  </Step>
+  <Step icon="Default" name="Get Class Objects Contents" resultVariable="payload">
+    <Script>
+      <Source>
+        <![CDATA[ 
+          import sailpoint.object.*; 
+          import org.apache.log4j.Logger;
+          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("Started getting class objects for " + theClass); 
+          Class myClass = null;
+          for(Class cls : ClassLists.MajorClasses){
+            if(cls.getSimpleName().equals(theClass)){
+              myClass = cls;
+              break;
+            }
+          }
+          if(null == myClass){
+            iidDevAccelLogger.debug("Couldn't find class " + theClass);
+            return "Couldn't find class " + theClass; 
+          }
+
+          String field = "name";
+          if(theClass.equals("Identity")){
+            field = "displayName";
+          }
+          List objectArray = new ArrayList();
+          Iterator it = context.search(myClass, null, field);
+          while(it.hasNext()){
+            Object[] obj = it.next();
+            objectArray.add(obj[0]);
+          }
+
+          List resultArray = new ArrayList();
+          for (Object objName : objectArray) {
+            SailPointObject obj = context.getUniqueObject(myClass, Filter.eq(field, objName));
+            if (null != obj) {
+              String xml = obj.toXml();
+              byte[] xmlData = xml.getBytes();
+              resultArray.add("{\"name\":\""+objName+"\",\"value\":\""+Base64.getEncoder().encodeToString(xmlData)+"\"}");
+            }
+          }
+          
+          iidDevAccelLogger.debug("Finished getting class objects contents"); 
+          return resultArray;
           ]]>
       </Source>
     </Script>
