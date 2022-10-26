@@ -18,8 +18,8 @@
     <Transition to="Get Class Objects" when='"getClassObjects".equals(operation);'/>
     <Transition to="Get Class Objects Contents" when='"getClassObjectsContents".equals(operation);'/>
     <Transition to="Get Object" when='"getObject".equals(operation);'/>
-    <!--
     <Transition to="Import" when='"Import".equals(operation);'/>
+    <!--
     <Transition to="Delete Object" when='"deleteObject".equals(operation);'/>
     <Transition to="Get Task List" when='"getTaskList".equals(operation);'/>
     <Transition to="Run Task" when='"runTask".equals(operation);'/>
@@ -291,7 +291,6 @@
     </Script>
     <Transition to="Stop"/>
   </Step>
-  <!--
   <Step icon="Provision" name="Import" resultVariable="payload">
     <Script>
       <Source>
@@ -319,6 +318,7 @@
     </Script>
     <Transition to="Stop"/>
   </Step>
+  <!--
   <Step icon="Default" name="Delete Object" resultVariable="payload">
     <Script>
       <Source>
