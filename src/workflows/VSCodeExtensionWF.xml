@@ -3,6 +3,7 @@
 <Workflow explicitTransitions="true" name="VSCodeExtensionWF">
   <Variable name="transient" initializer="true"/>
   <Variable name="payload" type="java.lang.Object" output="true"/>
+  <Description>Visual Studio Code SailPoint IdentityIQ Extension Workflow</Description>
   <Step icon="Start" name="Start">
     <Script>
       <Source>
