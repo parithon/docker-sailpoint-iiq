@@ -25,4 +25,3 @@ WORKDIR /opt/sailpoint
 
 HEALTHCHECK --start-period=120s --timeout=10s --interval=10s --retries=10 CMD ["/opt/sailpoint/healthcheck.sh"]
 CMD ["/opt/sailpoint/entrypoint.sh"]
-

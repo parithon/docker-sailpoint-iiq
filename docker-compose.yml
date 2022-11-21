@@ -6,38 +6,6 @@ services:
       - MYSQL_ROOT_PASSWORD=admin
     volumes:
       - sailpoint-iiq-db:/var/lib/mysql:rw
-  phpmysqladmin:
-    image: phpmyadmin:5.2.0-apache
-    ports:
-      - "127.0.0.1:9000:80/tcp"
-    depends_on:
-      - db
-    environment:
-      - MYSQL_ROOT_PASSWORD=admin
-      - PMA_HOST=db
-  ldap:
-    build:
-      context: .
-      dockerfile: ./openldap/Dockerfile
-    volumes:
-      - sailpoint-iiq-ldap-db:/var/lib/ldap:rw
-      - sailpoint-iiq-ldap-config:/etc/ldap:rw
-    environment:
-      - LDAP_ORGANIZATION=Contoso
-      - LDAP_DOMAIN=contoso.org
-      - LDAP_BASE_DN=DC=contoso,DC=org
-      - LDAP_ADMIN_PASSWORD=admin
-      - LDAP_CONFIG_PASSWORD=admin
-      - LDAP_TLS=false
-  phpldapadmin:
-    image: osixia/phpldapadmin:stable-amd64
-    ports:
-      - "127.0.0.1:9001:80/tcp"
-    depends_on:
-      - ldap
-    environment:
-      - PHPLDAPADMIN_HTTPS=false
-      - PHPLDAPADMIN_LDAP_HOSTS=ldap
   iiq:
     build:
       context: .
@@ -46,7 +14,6 @@ services:
       - "127.0.0.1:8080:8080/tcp"
     depends_on:
       - db
-      - ldap
     environment:
       - MYSQL_USER=root
       - MYSQL_PASS=admin
@@ -55,5 +22,3 @@ services:
       - IIQ_PATCH=8.3p1
 volumes:
   sailpoint-iiq-db:
-  sailpoint-iiq-ldap-db:
-  sailpoint-iiq-ldap-config:
