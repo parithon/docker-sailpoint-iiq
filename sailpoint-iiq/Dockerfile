@@ -18,6 +18,7 @@ RUN unzip /var/tmp/sailpoint-iiq/*.zip -d /var/tmp/sailpoint-iiq/iiq \
 FROM prepare AS runtime
 
 COPY --from=build /usr/local/tomcat/webapps/identityiq /usr/local/tomcat/webapps/identityiq
+COPY src/classes/*.* /usr/local/tomcat/webapps/identityiq/WEB-INF/classes
 COPY src/ /opt/sailpoint/
 RUN chmod u+x /usr/local/tomcat/webapps/identityiq/WEB-INF/bin/iiq \
   && chmod u+x /opt/sailpoint/*.sh

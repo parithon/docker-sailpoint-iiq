@@ -77,9 +77,9 @@ importIIQObjects() {
 			iiq "plugin install $file"
 		done
 	fi
-	if [[ -e /opt/sailpoint/workflows ]]; then
-		echo "=> importing custom workflows"
-		for file in `ls /opt/sailpoint/workflows/*.xml`
+	if [[ -e /opt/sailpoint/obj ]]; then
+		echo "=> importing custom objects"
+		for file in `ls -R /opt/sailpoint/obj/**/*.xml`
 		do
 			iiq "import $file"
 		done

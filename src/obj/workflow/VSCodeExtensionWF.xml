@@ -8,8 +8,10 @@
     <Script>
       <Source>
         import org.apache.log4j.Logger;
-        Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-        iidDevAccelLogger.debug("Workflow VSCodeExtensionWF started for operation: " + operation); 
+        import java.util.UUID;
+        String cid = UUID.randomUUID().toString();
+        Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF");
+        iidDevAccelLogger.debug("[" + username + "] Workflow VSCodeExtensionWF started for operation: " + operation);
       </Source>
     </Script>
     <Transition to="Get Version" when='"getVersion".equals(operation);'/>
@@ -38,13 +40,15 @@
       <Source>
         <![CDATA[
           import org.apache.log4j.Logger;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("GetVersion is called");
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] GetVersion is called");
           return "0.0.1";
         ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Get System Info" resultVariable="payload">
     <Script>
@@ -61,8 +65,10 @@
           import sailpoint.tools.Util;
           import sailpoint.Version;
 
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Getting System Info...");
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Getting System Info...");
           String[] logToSearchArr = {"log4j2.properties", "log4j.properties"};
           String contents = "";
 
@@ -86,12 +92,12 @@
 
           contents += "}}";
           
-          iidDevAccelLogger.debug("Successfully read a log4j file contents"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Successfully read a log4j file contents"); 
           return contents; 
         ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Get Log File" resultVariable="payload">
     <Script>
@@ -105,38 +111,40 @@
           import org.apache.log4j.Logger;
           import org.apache.logging.log4j.LogManager;
           import org.apache.logging.log4j.core.LoggerContext;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Getting log file...");
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Getting log file...");
           String[] logToSearchArr = {"log4j2.properties", "log4j.properties"};
           String contents = null;
           String logFileName = null;
           for(int i = 0; i < logToSearchArr.length; i++){
             String logToSearch = logToSearchArr[i];
-            iidDevAccelLogger.debug("Searing for " + logToSearch + "...");
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Searing for " + logToSearch + "...");
             logFileName = Util.findFile("user.dir", logToSearch, true);
             if(null != logFileName){
-              iidDevAccelLogger.debug("Found: " + logFileName);
+              iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Found: " + logFileName);
               break;
             }
           }
           if(null == logFileName){
-            iidDevAccelLogger.debug("Couldn't find a log4j file");
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Couldn't find a log4j file");
             return contents;
           }
           try{
             contents = new String(Files.readAllBytes(Paths.get(logFileName)));
           }
           catch(Exception e){
-            iidDevAccelLogger.debug("Exception during reading file: " + e.toString());
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Exception during reading file: " + e.toString());
             return "failed";
           }
 
-          iidDevAccelLogger.debug("Successfully read a log4j file contents"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Successfully read a log4j file contents"); 
           return contents; 
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Get Classes" resultVariable="payload">
     <Script>
@@ -144,8 +152,10 @@
         <![CDATA[ 
           import sailpoint.object.*; 
           import org.apache.log4j.Logger;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Started getting classes"); 
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Started getting classes"); 
           List resultArray = new ArrayList();
           for(Class cls : ClassLists.MajorClasses){
             boolean objExists = false;
@@ -155,18 +165,18 @@
               objExists = it.hasNext();
             }
             catch(Exception e){
-              iidDevAccelLogger.debug("Class " + cls + " can't be searched"); 
+              iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Class " + cls + " can't be searched"); 
             }
             if(objExists){
               resultArray.add(cls.getSimpleName());
             }
           }
-          iidDevAccelLogger.debug("Finished getting classes"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Finished getting classes"); 
           return resultArray; 
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Get Class Objects" resultVariable="payload">
     <Script>
@@ -174,8 +184,10 @@
         <![CDATA[ 
           import sailpoint.object.*; 
           import org.apache.log4j.Logger;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Started getting class objects for " + theClass); 
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Started getting class objects for " + theClass); 
           Class myClass = null;
           for(Class cls : ClassLists.MajorClasses){
             if(cls.getSimpleName().equals(theClass)){
@@ -184,7 +196,7 @@
             }
           }
           if(null == myClass){
-            iidDevAccelLogger.debug("Couldn't find class " + theClass);
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Couldn't find class " + theClass);
             return "fail"; 
           }
 
@@ -199,12 +211,12 @@
             resultArray.add(obj[0]);
           }
           
-          iidDevAccelLogger.debug("Finished getting class objects"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Finished getting class objects"); 
           return resultArray; 
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Get Class Objects Contents" resultVariable="payload">
     <Script>
@@ -212,8 +224,10 @@
         <![CDATA[ 
           import sailpoint.object.*; 
           import org.apache.log4j.Logger;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Started getting class objects for " + theClass); 
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Started getting class objects for " + theClass); 
           Class myClass = null;
           for(Class cls : ClassLists.MajorClasses){
             if(cls.getSimpleName().equals(theClass)){
@@ -222,7 +236,7 @@
             }
           }
           if(null == myClass){
-            iidDevAccelLogger.debug("Couldn't find class " + theClass);
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Couldn't find class " + theClass);
             return "Couldn't find class " + theClass; 
           }
 
@@ -247,12 +261,12 @@
             }
           }
           
-          iidDevAccelLogger.debug("Finished getting class objects contents"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Finished getting class objects contents"); 
           return resultArray;
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Get Object" resultVariable="payload">
     <Script>
@@ -260,8 +274,10 @@
         <![CDATA[ 
           import sailpoint.object.*; 
           import org.apache.log4j.Logger;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Started getting object for " + theClass + " and " + objName); 
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Started getting object for " + theClass + " and " + objName); 
           Class myClass = null;
           for(Class cls : ClassLists.MajorClasses){
             if(cls.getSimpleName().equals(theClass)){
@@ -285,12 +301,12 @@
             return "fail"; 
           }
           
-          iidDevAccelLogger.debug("Finished getting an object"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Finished getting an object"); 
           return obj.toXml(); 
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Provision" name="Import" resultVariable="payload">
     <Script>
@@ -300,12 +316,14 @@
           import sailpoint.tools.GeneralException; 
           import sailpoint.web.system.ImportBean.ImportMonitor; 
           import org.apache.log4j.Logger;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
 
-          iidDevAccelLogger.debug("Started Importer"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Started Importer"); 
           Importer importer = new Importer(context, new ImportMonitor()); 
           try { 
-            //iidDevAccelLogger.debug("File content: " + resource); 
+            //iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] File content: " + resource); 
             importer.importXml(resource); 
             context.commitTransaction(); 
           } 
@@ -317,7 +335,7 @@
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <!--
   <Step icon="Default" name="Delete Object" resultVariable="payload">
@@ -327,8 +345,10 @@
           import sailpoint.object.*;
           import sailpoint.api.*;
           import org.apache.log4j.Logger;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Started deleting object for " + theClass + " and " + objName); 
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Started deleting object for " + theClass + " and " + objName); 
           Class myClass = null;
           for(Class cls : ClassLists.MajorClasses){
             if(cls.getSimpleName().equals(theClass)){
@@ -346,7 +366,7 @@
             field = "displayName";
           }
 
-          iidDevAccelLogger.debug("Objects to delete: " + objNames); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Objects to delete: " + objNames); 
           
           for(String objName : objNames){
             SailPointObject obj = context.getUniqueObject(myClass, Filter.eq(field, objName));
@@ -358,13 +378,13 @@
             terminator.setTrace(true);
             terminator.deleteObject(obj);
 
-            iidDevAccelLogger.debug("Finished deleting object"); 
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Finished deleting object"); 
           }
           return "success"; 
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Get Task List" resultVariable="payload">
     <Script>
@@ -372,8 +392,10 @@
         <![CDATA[ 
           import sailpoint.object.*; 
           import org.apache.log4j.Logger;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Started Get Task List"); 
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Started Get Task List"); 
 
           List taskDefinitions = context.getObjects(TaskDefinition.class); 
           List resultArray = new ArrayList(); 
@@ -382,12 +404,12 @@
               resultArray.add(taskDefinition.getName()); 
             } 
           } 
-          iidDevAccelLogger.debug("Exiting Get Task List with  " + resultArray.size() + " tasks"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Exiting Get Task List with  " + resultArray.size() + " tasks"); 
           return resultArray; 
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Run Task" resultVariable="payload">
     <Script>
@@ -396,28 +418,30 @@
           import sailpoint.object.*; 
           import sailpoint.api.TaskManager; 
           import org.apache.log4j.Logger;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Started Run Task: " + taskName); 
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Started Run Task: " + taskName); 
 
           TaskManager tm = new TaskManager(context); 
           TaskDefinition taskDefinition = context.getObjectByName(TaskDefinition.class, taskName); 
           if(null == taskDefinition) { 
-            iidDevAccelLogger.debug("Couldn't fine task: " + taskName); 
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Couldn't fine task: " + taskName); 
             return "fail"; 
           } 
           TaskSchedule ts = tm.run(taskDefinition, inputArgs); 
           TaskResult tr = null; 
-          iidDevAccelLogger.debug("Start monitoring for task results..."); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Start monitoring for task results..."); 
           while (null == tr) { 
             tr = ts.getLatestResult(); 
             Thread.sleep(50);
           } 
-          iidDevAccelLogger.debug("Finished monitoring task results, result: " + tr); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Finished monitoring task results, result: " + tr); 
           return "taskId=" + tr.getId(); 
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Get Rules" resultVariable="payload">
     <Script>
@@ -425,14 +449,16 @@
         <![CDATA[ 
           import sailpoint.object.*; 
           import org.apache.log4j.Logger;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
           QueryOptions qo = new QueryOptions();
           if(void != ruleName && null != ruleName){
             Filter f = Filter.eq("name", ruleName);
             qo.addFilter(f);
           }
           List rules=context.getObjects(Rule.class, qo); 
-          iidDevAccelLogger.debug("got " + rules.size()); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] got " + rules.size()); 
           Map objMap = new HashMap();
 
           for (Rule rule: rules) { 
@@ -442,12 +468,12 @@
             } 
             objMap.put(rule.getName(), args);
           } 
-          iidDevAccelLogger.debug("returning " + objMap.keySet().size() + " rules"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] returning " + objMap.keySet().size() + " rules"); 
           return objMap; 
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Run Rule" resultVariable="payload">
     <Script>
@@ -456,23 +482,25 @@
           import sailpoint.object.*;
           import java.util.*;
           import org.apache.log4j.Logger;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Run Rule: " + ruleName); 
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Run Rule: " + ruleName); 
           Object result = null;
           try{
             Rule rule = (Rule)context.getObjectByName(Rule.class, ruleName);
             result = context.runRule(rule, inputArgs);
           }
           catch(Exception e){
-            iidDevAccelLogger.debug("Exception: " + e.toString()); 
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Exception: " + e.toString()); 
             result = e.toString();
           }
-          iidDevAccelLogger.debug("Exiting rule with result: " + result); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Exiting rule with result: " + result); 
           return null != result ? result:"null"; 
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Eval BS" resultVariable="payload">
     <Script>
@@ -485,10 +513,12 @@
           import org.apache.log4j.Logger;
           String injectContext = "import sailpoint.api.*;\nSailPointContext context = SailPointFactory.createPrivateContext();\n";
 
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Evaluating beanshell script" + script); 
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Evaluating beanshell script" + script); 
           File scriptFile = File.createTempFile("beanshell", null);
-          //iidDevAccelLogger.debug("temp path: " + scriptFile.getAbsolutePath()); 
+          //iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] temp path: " + scriptFile.getAbsolutePath()); 
           BufferedWriter bw = new BufferedWriter(new FileWriter(scriptFile));
           bw.write(injectContext + script);
           bw.close();
@@ -504,12 +534,12 @@
           if(null == result){
             result = "empty result";
           }
-          iidDevAccelLogger.debug("Script evaluated with: " + result); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Script evaluated with: " + result); 
           return result; 
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Reload Log File" resultVariable="payload">
     <Script>
@@ -521,21 +551,23 @@
           import org.apache.log4j.Logger;
           import org.apache.logging.log4j.LogManager;
           import org.apache.logging.log4j.core.LoggerContext;
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Reloading logging config...");
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Reloading logging config...");
           String[] logToSearchArr = {"log4j2.properties", "log4j.properties"};
           String logFileName = null;
           for(int i = 0; i < logToSearchArr.length; i++){
             String logToSearch = logToSearchArr[i];
-            iidDevAccelLogger.debug("Searing for " + logToSearch + "...");
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Searing for " + logToSearch + "...");
             logFileName = Util.findFile("user.dir", logToSearch, true);
             if(null != logFileName){
-              iidDevAccelLogger.debug("Found: " + logFileName);
+              iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Found: " + logFileName);
               break;
             }
           }
           if(null == logFileName){
-            iidDevAccelLogger.debug("Couldn't find a log4j file, nothing to refresh");
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Couldn't find a log4j file, nothing to refresh");
             return "failed, no existing file";
           }
 
@@ -543,22 +575,22 @@
             FileWriter myWriter = new FileWriter(logFileName);
             myWriter.write(logContent);
             myWriter.close();
-            iidDevAccelLogger.debug("Updated " + logFileName + " with " + logContent.length() + " bytes of content");
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Updated " + logFileName + " with " + logContent.length() + " bytes of content");
           }
           catch(Exception e){
-            iidDevAccelLogger.debug("Exception during writing to file: " + e.toString());
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Exception during writing to file: " + e.toString());
             return "failed";
           }
           File logFile = new File(logFileName);
           LoggerContext loggerContext = (LoggerContext)LogManager.getContext(false);
           loggerContext.setConfigLocation(logFile.toURI());
 
-          iidDevAccelLogger.debug("Finished reloading logging config"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Finished reloading logging config"); 
           return "succeeded"; 
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
   <Step icon="Default" name="Import Java" resultVariable="payload">
     <Script>
@@ -582,8 +614,10 @@
           import com.sun.jdi.connect.AttachingConnector;
           import com.sun.jdi.connect.Connector.Argument;
 
-          Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-          iidDevAccelLogger.debug("Importing Java File");
+          import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Importing Java File");
 
           private startRedeployment(){
             File webXML = new File(Util.getApplicationHome() + "WEB-INF/web.xml");
@@ -598,10 +632,10 @@
               Iterator connectorIterator = attachingConnectors.iterator();
 
               while(connectorIterator.hasNext()) {
-              iidDevAccelLogger.debug("connectorIterator.hasNext() succeeded");
+              iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] connectorIterator.hasNext() succeeded");
                 AttachingConnector conn = (AttachingConnector)connectorIterator.next();
                 if (conn.transport().name().equals(debugTransport)) {
-                  iidDevAccelLogger.debug("conn.transport.name is " + debugTransport);
+                  iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] conn.transport.name is " + debugTransport);
                   Map args = conn.defaultArguments();
                   Argument arg = args.get("port");
                   arg.setValue(debugPort);
@@ -609,14 +643,14 @@
                   arg = args.get("hostname");
                   arg.setValue(host);
                   args.put("hostname", arg);
-                  iidDevAccelLogger.debug("before conn.attach");
+                  iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] before conn.attach");
                   vm = conn.attach(args);
-                  iidDevAccelLogger.debug("after conn.attach");
+                  iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] after conn.attach");
                 }
               }
             }
             catch(Exception e){
-              iidDevAccelLogger.debug("Virtual Machine connector attach failed: " + e.getMessage());
+              iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Virtual Machine connector attach failed: " + e.getMessage());
             }
             return vm;
           }
@@ -685,7 +719,7 @@
           VirtualMachine vm = getVM();
           String hotSwapNeededResult = isHotSwapNeeded(clazzName);
           if(hotSwapNeededResult.equals("needed")){
-            iidDevAccelLogger.debug("HotSwap is needed, that means that the class is already loaded");
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] HotSwap is needed, that means that the class is already loaded");
             String hotSwapResult = doHotSwap(classBytes, clazzName);
             if(!hotSwapResult.equals("success")){
               returnMap.put("hotswapFailure", hotSwapResult);
@@ -698,34 +732,45 @@
             startRedeployment();
           }
           else{
-            iidDevAccelLogger.debug("HotSwap is not needed, we just uploaded the class file and you can use the new java class");
+            iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] HotSwap is not needed, we just uploaded the class file and you can use the new java class");
           }
           vm.dispose();
-          iidDevAccelLogger.debug("Successfully imported a java file: " + returnMap.toString());
+          iidDevAccelLogger.debug("[" + username + "] [correlationId: " + cid + "] Successfully imported a java file: " + returnMap.toString());
           return returnMap; 
           ]]>
       </Source>
     </Script>
-    <Transition to="Stop"/>
+    <Transition to="Audit Executed"/>
   </Step>
+  -->
   <Step icon="Default" name="Invalid operation" resultVariable="payload">
     <Script>
       <Source>
         import org.apache.log4j.Logger;
-        Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-        iidDevAccelLogger.debug("Not supported operation: " + operation);         
+        import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+        iidDevAccelLogger.debug("[" + username + "] Not supported operation: " + operation);         
         return operation + " not supported";
       </Source>
     </Script>
+    <Transition to="Audit Executed"/>
+  </Step>
+  <Step action="audit" icon="Audit" name="Audit Executed">
+    <Arg name="source" value="ref:launcher"/>
+    <Arg name="action" value="workflow:VSCodeExtensionWF"/>
+    <Arg name="target" value="Operation: $(operation)"/>
+    <Arg name="string1" value="executed"/>
     <Transition to="Stop"/>
   </Step>
-  -->
   <Step icon="Stop" name="Stop">
     <Script>
       <Source>
         import org.apache.log4j.Logger;
-        Logger iidDevAccelLogger=Logger.getLogger("sailpoint.VSCodeExtensionWF"); 
-        iidDevAccelLogger.debug("Workflow VSCodeExtensionWF stopped for operation: " + operation);
+        import java.util.UUID;
+          String cid = UUID.randomUUID().toString();
+          Logger iidDevAccelLogger=Logger.getLogger("VSCodeExtensionWF"); 
+        iidDevAccelLogger.debug("[" + username + "] Workflow VSCodeExtensionWF stopped for operation: " + operation);
       </Source>
     </Script>
   </Step>
