@@ -77,9 +77,9 @@ importIIQObjects() {
 			iiq "plugin install $file"
 		done
 	fi
-	if [[ -e /opt/sailpoint/obj ]]; then
-		echo "=> importing custom objects"
-		for file in `ls -R /opt/sailpoint/obj/**/*.xml`
+	if [[ -e /opt/sailpoint/config ]]; then
+		echo "=> importing custom configurations"
+		for file in `ls -R /opt/sailpoint/config/**/*.xml`
 		do
 			iiq "import $file"
 		done
