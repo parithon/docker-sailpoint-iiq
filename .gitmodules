@@ -1,0 +1,3 @@
+[submodule "lib/vscode-sailpoint-iiq"]
+	path = lib/vscode-sailpoint-iiq
+	url = https://github.com/parithon/vscode-sailpoint-iiq.git
